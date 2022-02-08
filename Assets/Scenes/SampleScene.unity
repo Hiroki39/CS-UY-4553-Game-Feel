@@ -130,6 +130,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3610185164898829417, guid: 4c2bd493ee7dfc644be689a22319fa68, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3610185164898829428, guid: 4c2bd493ee7dfc644be689a22319fa68, type: 3}
       propertyPath: m_Name
       value: Circle

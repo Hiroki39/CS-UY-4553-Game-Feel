@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class CircleScript : MonoBehaviour
 {
-    float speed = 5;
+    float speed = 50;
     Vector3 origin = new Vector3(0,0,1);
     public bool doSquish;
     public bool doTrail;
     TrailRenderer trail;
     Animator animator;
+    Rigidbody2D rb;
     void Awake()
     {
         trail = gameObject.GetComponent<TrailRenderer>();
         animator = gameObject.GetComponent<Animator>();
+        rb = gameObject.GetComponent<Rigidbody2D>();
         doSquish = true;
     }
 
@@ -31,7 +33,7 @@ public class CircleScript : MonoBehaviour
             trail.enabled = false;
         }
 
-        transform.Translate(Vector3.left* speed * Time.deltaTime);
+        rb.AddForce(Vector3.left * speed * Time.deltaTime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -40,7 +42,6 @@ public class CircleScript : MonoBehaviour
             animator.SetBool("doSquish", true);
         }
         speed *= -1;
-
         //Bounce off the wall
     }
 }
