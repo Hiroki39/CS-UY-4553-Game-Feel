@@ -8,15 +8,17 @@ public class CircleScript : MonoBehaviour
     Vector3 origin = new Vector3(0,0,1);
     public bool doSquish;
     public bool doTrail;
+    public bool doShake;
     TrailRenderer trail;
     Animator animator;
     Rigidbody2D rb;
+    CameraShake camShake;
     void Awake()
     {
         trail = gameObject.GetComponent<TrailRenderer>();
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
-        doSquish = true;
+        camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
     }
 
     // Update is called once per frame
@@ -40,6 +42,9 @@ public class CircleScript : MonoBehaviour
     {
         if (doSquish) {
             animator.SetBool("doSquish", true);
+        }
+        if (doShake) {
+            camShake.setDuration(0.15f);
         }
         speed *= -1;
         //Bounce off the wall
