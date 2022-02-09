@@ -13,18 +13,21 @@ public class CircleScript : MonoBehaviour
     public bool doShake;
     public bool doParticle;
     public bool doSound;
+    public bool left = true;
     TrailRenderer trail;
     Animator animator;
     Rigidbody2D rb;
     CameraShake camShake;
-    ParticleSystem particles;
+    ParticleSystem rightParticles;
+    ParticleSystem leftParticles;
     void Awake()
     {
         //Grab relevant components in this object & in camera
         trail = gameObject.GetComponent<TrailRenderer>();
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
-        particles = gameObject.GetComponent<ParticleSystem>();
+        rightParticles = GameObject.Find("Right Particles").GetComponent<ParticleSystem>();
+        leftParticles = GameObject.Find("Left Particles").GetComponent<ParticleSystem>();
         camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
     }
 
@@ -63,7 +66,8 @@ public class CircleScript : MonoBehaviour
 
         if (!doParticle)
         {
-            particles.Stop();
+            rightParticles.Stop();
+            leftParticles.Stop();
         }
         //Movement
         rb.AddForce(Vector3.left * speed * Time.deltaTime);
@@ -71,16 +75,31 @@ public class CircleScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log(left);
+        Debug.Log(doParticle);
         if (doSquish) {
             animator.SetBool("doSquish", true);
         }
         if (doShake) {
             camShake.setDuration(0.15f);
         }
-        if (doParticle)
+        if (left)
         {
-            particles.Play();
+            if (doParticle)
+            {
+                leftParticles.Play();
+            }
+            left = false;
+        } else
+        {
+            if (doParticle)
+            {
+                rightParticles.Play();
+            }
+            left = true;
         }
+        Debug.Log(left);
+        Debug.Log(doParticle);
         speed *= -1;
         //xPos *= -1;
         //yRot *= -1;
