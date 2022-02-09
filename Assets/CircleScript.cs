@@ -4,20 +4,25 @@ using UnityEngine;
 
 public class CircleScript : MonoBehaviour
 {
+    float xPos = 1;
+    float yRot = -90;
     float speed = 50;
     Vector3 origin = new Vector3(0,0,1);
     public bool doSquish;
     public bool doTrail;
     public bool doShake;
+    public bool doParticle;
     TrailRenderer trail;
     Animator animator;
     Rigidbody2D rb;
     CameraShake camShake;
+    ParticleSystem particles;
     void Awake()
     {
         trail = gameObject.GetComponent<TrailRenderer>();
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
+        particles = gameObject.GetComponent<ParticleSystem>();
         camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
     }
 
@@ -35,6 +40,11 @@ public class CircleScript : MonoBehaviour
             trail.enabled = false;
         }
 
+        if (!doParticle)
+        {
+            particles.Stop();
+        }
+
         rb.AddForce(Vector3.left * speed * Time.deltaTime);
     }
 
@@ -46,7 +56,15 @@ public class CircleScript : MonoBehaviour
         if (doShake) {
             camShake.setDuration(0.15f);
         }
+        if (doParticle)
+        {
+            particles.Play();
+        }
         speed *= -1;
+        //xPos *= -1;
+        //yRot *= -1;
+        //particles.transform.position = new Vector3(xPos, 0, 0);
+        //particles.transform.rotation = new Quaternion(0, yRot, 0,0);
         //Bounce off the wall
     }
 }
