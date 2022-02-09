@@ -12,6 +12,7 @@ public class CircleScript : MonoBehaviour
     public bool doTrail;
     public bool doShake;
     public bool doParticle;
+    public bool doSound;
     TrailRenderer trail;
     Animator animator;
     Rigidbody2D rb;
@@ -19,6 +20,7 @@ public class CircleScript : MonoBehaviour
     ParticleSystem particles;
     void Awake()
     {
+        //Grab relevant components in this object & in camera
         trail = gameObject.GetComponent<TrailRenderer>();
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -29,6 +31,25 @@ public class CircleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Effect toggles
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            doSquish = !doSquish;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            doTrail = !doTrail;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3)){
+            doShake = !doShake;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4)){
+            doParticle = !doParticle;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5)){
+            doSound = !doSound;
+        }
+
+
+        //Animation reset 
         if (Vector3.Distance(transform.position, origin) < 1.0f)
             animator.SetBool("doSquish", false);
 
@@ -44,7 +65,7 @@ public class CircleScript : MonoBehaviour
         {
             particles.Stop();
         }
-
+        //Movement
         rb.AddForce(Vector3.left * speed * Time.deltaTime);
     }
 
@@ -65,6 +86,7 @@ public class CircleScript : MonoBehaviour
         //yRot *= -1;
         //particles.transform.position = new Vector3(xPos, 0, 0);
         //particles.transform.rotation = new Quaternion(0, yRot, 0,0);
-        //Bounce off the wall
+
+
     }
 }
