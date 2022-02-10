@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CircleScript : MonoBehaviour
 {
-    float xPos = 1;
-    float yRot = -90;
     float xSpeed = 50;
     float ySpeed = 40;
     Vector3 origin = new Vector3(0, 0, 1);
@@ -18,10 +16,7 @@ public class CircleScript : MonoBehaviour
     Animator animator;
     Rigidbody2D rb;
     CameraShake camShake;
-    public ParticleSystem rightParticles;
-    public ParticleSystem leftParticles;
-    public ParticleSystem upParticles;
-    public ParticleSystem downParticles;
+    public ParticleSystem particles;
     AudioSource _audioSource;
     public AudioClip hitSnd1;
     public AudioClip hitSnd2;
@@ -34,6 +29,7 @@ public class CircleScript : MonoBehaviour
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        particles = GameObject.Find("Particle System").GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -85,10 +81,7 @@ public class CircleScript : MonoBehaviour
 
         if (!doParticle)
         {
-            rightParticles.Stop();
-            leftParticles.Stop();
-            upParticles.Stop();
-            downParticles.Stop();
+            particles.Stop();
         }
         //Movement
         rb.AddForce(Vector3.left * xSpeed * Time.deltaTime);
@@ -97,7 +90,6 @@ public class CircleScript : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log(doParticle);
         if (doSquish)
         {
             animator.SetBool("doSquish", true);
@@ -111,44 +103,19 @@ public class CircleScript : MonoBehaviour
         {
             _audioSource.PlayOneShot(hitSnd1, 0.5f);
         }
-        if (other.gameObject.CompareTag("LeftObstacle"))
+        if (other.gameObject.CompareTag("LeftObstacle") || other.gameObject.CompareTag("RightObstacle"))
         {
-            if (doParticle)
-            {
-                leftParticles.Play();
-            }
             xSpeed *= -1;
         }
-        else if (other.gameObject.CompareTag("RightObstacle"))
+        else if (other.gameObject.CompareTag("UpObstacle") || other.gameObject.CompareTag("Player"))
         {
-            if (doParticle)
-            {
-                rightParticles.Play();
-            }
-            xSpeed *= -1;
-        }
-        else if (other.gameObject.CompareTag("UpObstacle"))
-        {
-            if (doParticle)
-            {
-                upParticles.Play();
-            }
             ySpeed *= -1;
         }
-        else if (other.gameObject.CompareTag("Player"))
-        {
-            if (doParticle)
-            {
-                downParticles.Play();
-            }
-            ySpeed *= -1;
-        }
-        Debug.Log(doParticle);
 
-        //xPos *= -1;
-        //yRot *= -1;
-        //particles.transform.position = new Vector3(xPos, 0, 0);
-        //particles.transform.rotation = new Quaternion(0, yRot, 0,0);
+        ContactPoint2D contact = other.GetContact(0);
+        Vector3 pos = contact.point;
+        particles.transform.position = pos;
+        particles.Play();
 
 
     }

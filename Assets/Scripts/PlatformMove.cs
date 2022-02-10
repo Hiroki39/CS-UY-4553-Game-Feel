@@ -22,5 +22,11 @@ public class PlatformMove : MonoBehaviour
     {
         float xSpeed = Input.GetAxis("Horizontal") * speed;
         rb.AddForce(Vector3.right * xSpeed * Time.deltaTime);
+
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 1;
+        mousePosition.y = (float)-5.72;
+        transform.position = mousePosition;
     }
 }
