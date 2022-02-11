@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class CircleScript : MonoBehaviour
 {
@@ -12,14 +14,23 @@ public class CircleScript : MonoBehaviour
     public bool doShake;
     public bool doParticle;
     public bool doSound;
+
+    public Canvas canvas1;
+    public Canvas canvas2;
+    public Canvas canvas3;
+    public Canvas canvas4;
+    public Canvas canvas5;
+    public Canvas canvas6;
     TrailRenderer trail;
     Animator animator;
     Rigidbody2D rb;
     CameraShake camShake;
-    public ParticleSystem particles;
+    ParticleSystem particles;
     AudioSource _audioSource;
     public AudioClip hitSnd1;
     public AudioClip hitSnd2;
+
+    Color32[] colorArray = { new Color32(159, 154, 154, 255), new Color32(233, 154, 53, 255) };
 
     void Awake()
     {
@@ -39,8 +50,11 @@ public class CircleScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             doSquish = !doSquish;
+            Debug.Log(colorArray[doSquish ? 1 : 0]);
+            canvas1.GetComponent<Image>().color = colorArray[doSquish ? 1 : 0];
+            Debug.Log(canvas1.GetComponent<Image>().color);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             doTrail = !doTrail;
             if (doTrail)
@@ -51,18 +65,38 @@ public class CircleScript : MonoBehaviour
             {
                 _audioSource.Stop();
             }
+            canvas2.GetComponent<Image>().color = colorArray[doTrail ? 1 : 0];
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             doShake = !doShake;
+            canvas3.GetComponent<Image>().color = colorArray[doShake ? 1 : 0];
         }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             doParticle = !doParticle;
+            canvas4.GetComponent<Image>().color = colorArray[doParticle ? 1 : 0];
         }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             doSound = !doSound;
+            if (doSound)
+            {
+                if (doTrail)
+                {
+                    _audioSource.Play();
+                }
+            }
+            else
+            {
+                _audioSource.Stop();
+            }
+            canvas5.GetComponent<Image>().color = colorArray[doSound ? 1 : 0];
+        }
+        else if (Input.GetKeyDown(KeyCode.P))
+        {
+            Time.timeScale = 1 - Time.timeScale;
+            canvas6.GetComponent<Image>().color = colorArray[1 - (int)Time.timeScale];
         }
 
 
@@ -86,6 +120,11 @@ public class CircleScript : MonoBehaviour
         //Movement
         rb.AddForce(Vector3.left * xSpeed * Time.deltaTime);
         rb.AddForce(Vector3.up * ySpeed * Time.deltaTime);
+
+        if (transform.position.y < -7)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -97,11 +136,17 @@ public class CircleScript : MonoBehaviour
         if (doShake)
         {
             camShake.setDuration(0.15f);
-            _audioSource.PlayOneShot(hitSnd2, 0.5f);
+            if (doSound)
+            {
+                _audioSource.PlayOneShot(hitSnd2, 0.5f);
+            }
         }
         else
         {
-            _audioSource.PlayOneShot(hitSnd1, 0.5f);
+            if (doSound)
+            {
+                _audioSource.PlayOneShot(hitSnd1, 0.5f);
+            }
         }
         if (other.gameObject.CompareTag("LeftObstacle") || other.gameObject.CompareTag("RightObstacle"))
         {
