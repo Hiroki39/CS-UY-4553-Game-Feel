@@ -9,11 +9,11 @@ public class CircleScript : MonoBehaviour
     float xSpeed = 50;
     float ySpeed = 40;
     Vector3 origin = new Vector3(0, 0, 1);
-    public bool doSquish;
-    public bool doTrail;
-    public bool doShake;
-    public bool doParticle;
-    public bool doSound;
+    bool doSquish;
+    bool doTrail;
+    bool doShake;
+    bool doParticle;
+    bool doSound;
 
     public Canvas canvas1;
     public Canvas canvas2;
@@ -27,13 +27,26 @@ public class CircleScript : MonoBehaviour
     CameraShake camShake;
     ParticleSystem particles;
     AudioSource _audioSource;
+    bool reloading = false;
     public AudioClip hitSnd1;
     public AudioClip hitSnd2;
+    public AudioClip failSnd;
 
     Color32[] colorArray = { new Color32(159, 154, 154, 255), new Color32(233, 154, 53, 255) };
 
     void Awake()
     {
+        doSquish = PublicVars.doSquish;
+        doTrail = PublicVars.doTrail;
+        doShake = PublicVars.doShake;
+        doParticle = PublicVars.doParticle;
+        doSound = PublicVars.doSound;
+
+        canvas1.GetComponent<Image>().color = colorArray[doSquish ? 1 : 0];
+        canvas2.GetComponent<Image>().color = colorArray[doTrail ? 1 : 0];
+        canvas3.GetComponent<Image>().color = colorArray[doShake ? 1 : 0];
+        canvas4.GetComponent<Image>().color = colorArray[doParticle ? 1 : 0]; canvas5.GetComponent<Image>().color = colorArray[doSound ? 1 : 0];
+
         //Grab relevant components in this object & in camera
         _audioSource = GetComponent<AudioSource>();
         trail = gameObject.GetComponent<TrailRenderer>();
@@ -41,6 +54,14 @@ public class CircleScript : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
         particles = GameObject.Find("Particle System").GetComponent<ParticleSystem>();
+
+        if (doTrail)
+        {
+            if (doSound)
+            {
+                _audioSource.Play();
+            }
+        }
     }
 
     // Update is called once per frame
@@ -59,7 +80,10 @@ public class CircleScript : MonoBehaviour
             doTrail = !doTrail;
             if (doTrail)
             {
-                _audioSource.Play();
+                if (doSound)
+                {
+                    _audioSource.Play();
+                }
             }
             else
             {
@@ -77,7 +101,7 @@ public class CircleScript : MonoBehaviour
             doParticle = !doParticle;
             canvas4.GetComponent<Image>().color = colorArray[doParticle ? 1 : 0];
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        else if (Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.S))
         {
             doSound = !doSound;
             if (doSound)
@@ -121,10 +145,27 @@ public class CircleScript : MonoBehaviour
         rb.AddForce(Vector3.left * xSpeed * Time.deltaTime);
         rb.AddForce(Vector3.up * ySpeed * Time.deltaTime);
 
-        if (transform.position.y < -7)
+        if (!reloading && transform.position.y < -7)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            reloading = true;
+            StartCoroutine(WaitForSceneLoad());
         }
+    }
+
+    IEnumerator WaitForSceneLoad()
+    {
+        PublicVars.doSquish = doSquish;
+        PublicVars.doTrail = doTrail;
+        PublicVars.doShake = doShake;
+        PublicVars.doParticle = doParticle;
+        PublicVars.doSound = doSound;
+
+        if (doSound)
+        {
+            _audioSource.PlayOneShot(failSnd);
+        }
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void OnCollisionEnter2D(Collision2D other)

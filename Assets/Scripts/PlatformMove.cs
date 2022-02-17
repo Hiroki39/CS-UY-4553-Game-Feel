@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlatformMove : MonoBehaviour
 {
-    float speed = 400;
-    Rigidbody2D rb;
+    float initY;
+    float initZ;
     // Start is called before the first frame update
     void Start()
     {
-        rb = gameObject.GetComponent<Rigidbody2D>();
+        initY = transform.position.y;
+        initZ = transform.position.z;
     }
 
     // Update is called once per frame
@@ -20,13 +21,10 @@ public class PlatformMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        float xSpeed = Input.GetAxis("Horizontal") * speed;
-        rb.AddForce(Vector3.right * xSpeed * Time.deltaTime);
-
         Vector3 mousePosition = Input.mousePosition;
         mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 1;
-        mousePosition.y = (float)-5.72;
+        mousePosition.z = initZ;
+        mousePosition.y = initY;
         transform.position = mousePosition;
     }
 }
